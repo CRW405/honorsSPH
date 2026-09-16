@@ -35,8 +35,8 @@ display, input, and, graphics stuff handled by raylib
 - I personally like C
 - C is very fast
 - Data and CPU oriented programming is perfect for this use case
-- C does not hold you hand at all
 - You learn C and low level programming
+- From scratch
 
 ##### Cons
 
@@ -47,7 +47,7 @@ display, input, and, graphics stuff handled by raylib
     - Cmake - I can probably set this up for us
     - Raylib
 - C does not even have strings, dynamic arrays, other things you probably expect a language to have
-- From scratch
+- C does not hold you hand at all
 
 #### Python path
 

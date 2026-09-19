@@ -8,8 +8,8 @@ This is what I had in mine for potential tasks that we will have throughout the 
 ## September
 1. Research: 
     * Density, fluidity, and pressure
-    * How 2D fluid sims work
-    * Learn how to use `raylib` in Python 
+    * How [2D fluid sims](https://www.youtube.com/watch?v=rSKMYc1CQHE) work
+    * Learn how to use [`raylib` in Python](https://www.youtube.com/watch?v=UoAsDlUwjy0) 
     * *Bonus:* look into how `scipy.spatial.cKDTree` function works
 
 2. Create/brainstorm features and tasks for this project

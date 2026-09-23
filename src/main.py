@@ -14,15 +14,42 @@ p_texture: Texture2D
 p_source: Rectangle
 p_origin: Vector2
 
-class Particle:
-    def __init__(self, position: np.ndarray, density: float,
-                 velocity: np.ndarray, pressure: float,
-                 color: Color = BLUE) -> None:
-        self.position: np.ndarray = position
-        self.density: float = density
-        self.velocity: np.ndarray = velocity
-        self.pressure: float = pressure
-        self.color: Color = color
+class Particles:
+    positions: np.ndarray
+    velocities: np.ndarray
+    densities: np.ndarray
+    pressures: np.ndarray
+
+    def __init__(self) -> None:
+        self.positions = np.empty((0, 2))
+        self.velocities = np.empty((0, 2))
+        self.densities = np.empty(0)
+        self.pressures = np.empty(0)
+
+    def add(self, position: np.ndarray, density: float, velocity: np.ndarray, pressure: float) -> None:
+        self.positions = np.append(self.positions, position)
+        self.velocities = np.append(self.velocities, velocity)
+        self.densities = np.append(self.densities, density)
+        self.pressures = np.append(self.pressures, pressure)
+
+    def create_random_particles(self, amount: int) -> None:
+        self.positions = np.random.rand(amount, 2) * np.array([screen_width, screen_height])
+        self.velocities = np.zeros((amount, 2))
+        self.densities = np.zeros(amount)
+        self.pressures = np.zeros(amount)
+
+    def render(self) -> None:
+        for i in range(len(self.positions)):
+            draw_texture_pro(p_texture,
+                             p_source,
+                             Rectangle(self.positions[i][0] - p_size / 2,
+                                       self.positions[i][1] - p_size / 2,
+                                       p_size,
+                                       p_size),
+                             p_origin,
+                             0.0,
+                             WHITE)
+
 
 def create_particle_texture() -> None:
     global p_texture, p_source, p_origin
@@ -32,51 +59,16 @@ def create_particle_texture() -> None:
     p_source = Rectangle(0, 0, 1, 1)
     p_origin = Vector2(0.5, 0.5)
 
-def draw_particle(particle: Particle) -> None:
-    draw_texture_pro(p_texture,
-                     p_source,
-                     Rectangle(particle.position[0] - p_size / 2,
-                               particle.position[1] - p_size / 2,
-                               p_size,
-                               p_size),
-                     p_origin,
-                     0.0,
-                     particle.color)
-
-# Placeholder !!!!
-def apply_forces(particle: Particle, dt: float) -> None:
-    particle.velocity[1] += g * dt
-
-    particle.position += particle.velocity * dt
-
-    if particle.position[1] > screen_height - p_size / 2:
-        particle.position[1] = screen_height - p_size / 2
-        particle.velocity[1] *= -0.5  # bounce
-
-    if particle.position[1] < p_size / 2:
-        particle.position[1] = p_size / 2
-        particle.velocity[1] *= -0.5
-
-    if particle.position[0] > screen_width - p_size / 2:
-        particle.position[0] = screen_width - p_size / 2
-        particle.velocity[0] *= -0.5
-
-    if particle.position[0] < p_size / 2:
-        particle.position[0] = p_size / 2
-        particle.velocity[0] *= -0.5
-
-def create_random_particles(num_particles: int) -> List[Particle]:
-    particles: List[Particle] = []
-    for _ in range(num_particles):
-        position: np.ndarray = np.array([np.random.uniform(0, screen_width),
-                                         np.random.uniform(0, screen_height)])
-        density: float = 1.0
-        velocity: np.ndarray = np.array([np.random.uniform(-50, 50),
-                                         np.random.uniform(-50, 50)])
-        pressure: float = 1.0
-        color: Color = RED
-        particles.append(Particle(position, density, velocity, pressure, color))
-    return particles
+# def draw_particle(particle: Particle) -> None:
+#     draw_texture_pro(p_texture,
+#                      p_source,
+#                      Rectangle(particle.position[0] - p_size / 2,
+#                                particle.position[1] - p_size / 2,
+#                                p_size,
+#                                p_size),
+#                      p_origin,
+#                      0.0,
+#                      particle.color)
 
 target_fps: int = 60
 speedup:float = 1.0 # I didnt wanna wait to see my results
@@ -87,14 +79,11 @@ async def main() -> None:
     init_window(screen_width, screen_height, "Honors SPH Fluid Sim")
     set_window_size(screen_width, screen_height)
     set_target_fps(target_fps)
+
     create_particle_texture()
 
-    # some particle tests
-    test: Particle = Particle(np.array([screen_width / 2, screen_height / 2]),
-                              1.0,
-                              np.array([50.0, -25.0]),
-                              1.0)  # example particle
-    test_many: List[Particle] = create_random_particles(random_partcle_amount)  # example many particles
+    particles = Particles()
+    particles.create_random_particles(random_partcle_amount)
 
     # main loop
     while not window_should_close():
@@ -104,10 +93,7 @@ async def main() -> None:
 
         # this is where we do real work
         draw_text("Hello World", 200, 200, 20, BLACK)
-        [apply_forces(p, dt) for p in test_many]
-        [draw_particle(p) for p in test_many]
-        apply_forces(test, dt)
-        draw_particle(test)
+        particles.render()
 
         draw_text(f"FPS: {get_fps()}", 10, 10, 20, BLACK)
         end_drawing()

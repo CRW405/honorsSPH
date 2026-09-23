@@ -26,9 +26,9 @@ A 2D SPH fluid sim for a physics honors contract.
 
 ## Contributors
 
-* Bryan - Project Lead
-* Caleb
-* Symphony
+* Bryan    - Project Lead
+* Caleb    - Technical Lead
+* Symphony - Physics Lead
 
 ## Resources
 
@@ -36,5 +36,9 @@ A 2D SPH fluid sim for a physics honors contract.
 - [Scipy](https://scipy.org/)
 - [Raylib](https://www.raylib.com/)
 - [Raylib Python Bindings](https://electronstudio.github.io/raylib-python-cffi/)
+- [Ch. 14.1 - Fluids, Density, and Pressure](https://openstax.org/books/university-physics-volume-1/pages/14-1-fluids-density-and-pressure)
+- [Ch. 14.5 - Fluid Dynamics](https://openstax.org/books/university-physics-volume-1/pages/14-5-fluid-dynamics)
+- [Ch. 14.7 - Viscosity and Turbulence](https://openstax.org/books/university-physics-volume-1/pages/14-7-viscosity-and-turbulence)
+- [Navier-Stokes Wikipedia](https://en.wikipedia.org/wiki/Navier%E2%80%93Stokes_equations)
 
 ## Notes

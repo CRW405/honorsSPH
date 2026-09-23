@@ -7,6 +7,7 @@ from typing import *
 
 screen_width: int = 500
 screen_height: int = 500
+
 g: float = 9.81
 p_size: int = 10
 
@@ -14,6 +15,7 @@ p_texture: Texture2D
 p_source: Rectangle
 p_origin: Vector2
 
+# If we want, we can find an actual image but I didt wanna do that so I created one dynamically
 def create_particle_texture() -> None:
     global p_texture, p_source, p_origin
     p_image: Image = gen_image_color(1, 1, WHITE)
@@ -27,7 +29,7 @@ class Particles:
     velocities: np.ndarray
     densities: np.ndarray
     pressures: np.ndarray
-    color: Color
+    color: Color # We can turn this into some sort of index -> color map later on if we want per particle colors
 
     def __init__(self, color:Color=BLUE) -> None:
         self.positions = np.empty((0, 2))
@@ -41,6 +43,12 @@ class Particles:
         self.velocities = np.vstack([self.velocities, velocity])
         self.densities = np.append(self.densities, density)
         self.pressures = np.append(self.pressures, pressure)
+
+    def remove(self, index: int) -> None:
+        self.positions = np.delete(self.positions, index, axis=0)
+        self.velocities = np.delete(self.velocities, index, axis=0)
+        self.densities = np.delete(self.densities, index)
+        self.pressures = np.delete(self.pressures, index)
 
     def create_random_particles(self, amount: int) -> None:
         self.positions = np.random.rand(amount, 2) * np.array([screen_width, screen_height])
@@ -92,7 +100,6 @@ def spawn(particle_system: Particles, position: np.ndarray, velocity: np.ndarray
 
 target_fps: int = 60
 speedup:float = 1.0
-random_partcle_amount: int = 1000
 
 async def main() -> None:
     # setup and init
@@ -102,6 +109,8 @@ async def main() -> None:
 
     create_particle_texture()
 
+    # In the final version, we will obviously only have one particle system, this is for testing
+    random_partcle_amount: int = 1000
     particles = Particles(color=BLUE)
     particles.create_random_particles(random_partcle_amount)
 

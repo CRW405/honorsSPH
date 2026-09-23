@@ -141,6 +141,7 @@ async def main() -> None:
         placeable.update(dt)
         placeable.render_textures()
 
+        # Technically a performance hit, we should create a global variable and update on actual add and remove but this is python so we hate performace
         p_count = len(particles.positions) + len(single.positions) + len(placeable.positions)
         draw_text(f"Particle Count: {p_count}", 10, 30, 20, BLACK)
 

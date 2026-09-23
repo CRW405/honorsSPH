@@ -5,10 +5,10 @@ import platform
 from pyray import *
 from typing import *
 
-global screen_width:int = 500
-global screen_height:int = 500
-global g:float = 9.81
-global p_size:int = 10
+screen_width:int = 500
+screen_height:int = 500
+g:float = 9.81
+p_size:int = 10
 
 class Particle:
     def __init__(self, position, density, velocity, pressure, color=BLUE):
@@ -57,6 +57,7 @@ def apply_forces(particle: Particle, dt: float)->None:
 
 
 async def main():
+    # setup and init
     init_window(screen_width, screen_height,"Honors SPH Fluid Sim")
     fps:int = 60
     set_target_fps(fps)
@@ -65,14 +66,15 @@ async def main():
     test:Particle = Particle(np.array([screen_width/2, screen_height/2]),
                              1.0,
                              np.array([50.0, -25.0]),
-                             1.0)
+                             1.0) # example particle
 
+    # main loop
     while not window_should_close():
         begin_drawing()
         clear_background(WHITE)
 
+        # this is where we do real work
         draw_text("Hello World", 200, 200, 20, BLACK)
-
         apply_forces(test, 1/fps)
         draw_particle(test)
 

@@ -43,9 +43,9 @@ A 2D SPH fluid sim for a physics honors contract.
 
 ## Setup
 
-1 - set up venv with `python -m venv venv` at the project root
-2 - activate venv with `source venv/bin/activate` (Linux) or `venv\Scripts\activate` (Windows)
-3 - install dependencies with `pip install -r requirements.txt`
-4 - run the program with `python ./src/main.py`
+1. set up venv with `python -m venv venv` at the project root
+2. activate venv with `source venv/bin/activate` (Linux) or `venv\Scripts\activate` (Windows)
+3. install dependencies with `pip install -r requirements.txt`
+4. run the program with `python ./src/main.py`
 
 ## Notes

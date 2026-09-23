@@ -8,7 +8,7 @@ from typing import *
 screen_width: int = 500
 screen_height: int = 500
 
-g: float = 9.81
+g: float = 9.81 * 10
 p_size: int = 10
 
 p_texture: Texture2D
@@ -110,9 +110,9 @@ async def main() -> None:
     create_particle_texture()
 
     # In the final version, we will obviously only have one particle system, this is for testing
-    random_partcle_amount: int = 1000
+    random_particle_amount: int = 1000
     particles = Particles(color=BLUE)
-    particles.create_random_particles(random_partcle_amount)
+    particles.create_random_particles(random_particle_amount)
 
     single = Particles(color=RED)
     single.add(np.array([[screen_width / 2, screen_height / 2]]),

@@ -48,6 +48,7 @@ class Particles:
         self.densities = np.zeros(amount)
         self.pressures = np.zeros(amount)
 
+    # Placeholder !!! Poor Performnace
     def render_textures(self) -> None:
         for i in range(len(self.positions)):
             draw_texture_pro(p_texture,
@@ -86,9 +87,12 @@ class Particles:
         self.positions[left, 0] = p_size / 2
         self.velocities[left, 0] *= -0.5
 
+def spawn(particle_system: Particle, position: np.ndarray, velocity: np.ndarray, density: float, pressure: float) -> None:
+    particle_system.add(position, velocity, density, pressure)
+
 target_fps: int = 60
-speedup:float = 10.0
-random_partcle_amount: int = 10000
+speedup:float = 1.0
+random_partcle_amount: int = 1000
 
 async def main() -> None:
     # setup and init
@@ -98,7 +102,7 @@ async def main() -> None:
 
     create_particle_texture()
 
-    particles = Particles()
+    particles = Particles(color=BLUE)
     particles.create_random_particles(random_partcle_amount)
 
     single = Particles(color=RED)
@@ -106,6 +110,8 @@ async def main() -> None:
                np.array([10.0, 10.0]),
                1.0,
                1.0)
+
+    placeable = Particles(color=GREEN)
 
     # main loop
     while not window_should_close():
@@ -119,6 +125,15 @@ async def main() -> None:
         particles.render_textures()
         single.update(dt)
         single.render_textures()
+
+        if is_mouse_button_down(MOUSE_BUTTON_LEFT):
+            mouse_pos = np.array([get_mouse_x(), get_mouse_y()])
+            spawn(placeable, mouse_pos, np.array([0.0, 0.0]), 1.0, 1.0)
+        placeable.update(dt)
+        placeable.render_textures()
+
+        p_count = len(particles.positions) + len(single.positions) + len(placeable.positions)
+        draw_text(f"Particle Count: {p_count}", 10, 30, 20, BLACK)
 
         draw_text(f"FPS: {get_fps()}", 10, 10, 20, BLACK)
         end_drawing()

@@ -87,7 +87,7 @@ class Particles:
         self.positions[left, 0] = p_size / 2
         self.velocities[left, 0] *= -0.5
 
-def spawn(particle_system: Particle, position: np.ndarray, velocity: np.ndarray, density: float, pressure: float) -> None:
+def spawn(particle_system: Particles, position: np.ndarray, velocity: np.ndarray, density: float, pressure: float) -> None:
     particle_system.add(position, velocity, density, pressure)
 
 target_fps: int = 60

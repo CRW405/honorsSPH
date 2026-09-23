@@ -60,6 +60,7 @@ class Particles:
                              0.0,
                              self.color)
 
+    # Placeholder !!!
     def update(self, dt: float) -> None:
         self.velocities[:, 1] += g * dt
 
@@ -116,7 +117,6 @@ async def main() -> None:
         draw_text("Hello World", 200, 200, 20, BLACK)
         particles.update(dt)
         particles.render_textures()
-
         single.update(dt)
         single.render_textures()
 

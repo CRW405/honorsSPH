@@ -24,7 +24,18 @@ This is what I had in mine for potential tasks that we will have throughout the 
 > *Note: Step 1 is independent and 2-4 will be done together in a meeting*
 
 ## October
+>**Goal** \
+>Have particles behave more like fluid instead of falling pebbles
 
+1. Converting placeholders `gravity` and `velocity` to realisitc values in respect to the rendering
+
+2. Implement `density_calc` per particle using the kernal and neighbors
+    * **Done** when hand calculations for small amount of particles matches with program calculation output 
+    * Look into how we density 
+
+3. Implement `pressure`
+    * push from high to low pressure
+    * **Done** when a single tight clamp of particles visibly spreads apart after spawning
 
 5. `spawn` function that places N amount of particles in container
     * distance between each of them
@@ -52,14 +63,7 @@ This is what I had in mine for potential tasks that we will have throughout the 
 
 2. Connect `cKDTree` test script from Oct.7 into actual particle system
     * used to find real neighbors for each particle
-    * **Dones** when you can print the IDs of all its neightbors for the chosen particle
-
-3. Implement `density_calc` per particle using the kernal and neighbors
-    * **Done** when hand calculations for small amount of particles matches with program calculation output
-
-4. Implement `pressure`
-    * push from high to low pressure
-    * **Done** when a single tight clamp of particles visibly spreads apart after spawning
+    * **Done** when you can print the IDs of all its neightbors for the chosen particle
 
 5. Combine `gravity` (Oct.4) + `pressure` (Nov.4) + `collision` (Oct.6)
     * **Done** when particles poured into container and spread across the floor like fluid

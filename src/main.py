@@ -8,7 +8,7 @@ from typing import *
 screen_width: int = 500
 screen_height: int = 500
 
-g: float = 9.81
+g: float = 9.81 * 10
 p_size: int = 10
 
 p_texture: Texture2D

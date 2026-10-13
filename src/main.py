@@ -135,7 +135,7 @@ async def main() -> None:
         single.update(dt)
         single.render_textures()
 
-        if is_mouse_button_down(MOUSE_BUTTON_LEFT):
+        if is_mouse_button_down(0):  # Left mouse button index in raylib
             mouse_pos = np.array([get_mouse_x(), get_mouse_y()])
             spawn(placeable, mouse_pos, np.array([0.0, 0.0]), 1.0, 1.0)
         placeable.update(dt)

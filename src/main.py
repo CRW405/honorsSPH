@@ -8,6 +8,8 @@ from typing import *
 screen_width: int = 500
 screen_height: int = 500
 
+# Fluid behavior will change based off density, fluidity, and velocity
+# g: float = (2 * screen_height) / 0.8**2
 g: float = 9.81 * 10
 p_size: int = 10
 
@@ -31,6 +33,7 @@ class Particles:
     pressures: np.ndarray
     color: Color # We can turn this into some sort of index -> color map later on if we want per particle colors
 
+    # initialize empty arrays for position, velocity, density, pressure, and color
     def __init__(self, color:Color=BLUE) -> None:
         self.positions = np.empty((0, 2))
         self.velocities = np.empty((0, 2))
@@ -69,8 +72,44 @@ class Particles:
                              0.0,
                              self.color)
 
+    # Density calculations made here
+    def density_calc(self, smoothing_radius: float, mass: float = 1.0) -> None:
+            # deal with empty particle system 
+            if len(self.positions) == 0:
+                self.densities = np.empty(0)
+                return
+
+            self.densities = np.zeros(len(self.positions))
+
+            # build spatial tree using all current positons of the particles
+            tree = sp.spatial.cKDTree(self.positions)
+
+            # find neighbors for every particle 
+            for i in range(len(self.positions)):
+                neighbors = tree.query_ball_point(self.positions[i], smoothing_radius)
+
+                # calculate distance (r) between particle (i) and each neighbor
+                density_sum = 0.0
+                for neighbor_idx in neighbors:
+                    neighbor_pos = self.positions[neighbor_idx]
+                    # gets distance (r) from the position index and its neighbor position 
+                    r = np.linalg.norm(self.positions[i] - neighbor_pos)
+
+                    # condition linear smoothing kernel weight 
+                    if r < smoothing_radius:
+                        weight = 1.0 - (r / smoothing_radius)
+                        density_sum += mass * weight
+
+                self.densities[i] = density_sum
+                
+            # test to see if density has been implemented
+            print(f"Sample Densities: {self.densities[:5]}")
+
     # Placeholder !!!
     def update(self, dt: float) -> None:
+        # calculate density function first thing every frame
+        self.density_calc(smoothing_radius = 20.0)
+
         self.velocities[:, 1] += g * dt
 
         self.positions += self.velocities * dt
@@ -94,6 +133,19 @@ class Particles:
         left = self.positions[:, 0] < p_size / 2
         self.positions[left, 0] = p_size / 2
         self.velocities[left, 0] *= -0.5
+
+        accelerations = np.zeros_like(self.velocities)
+        accelerations[:, 1] = g
+        
+        # update velocities using acceleration
+        self.velocities += accelerations * dt
+
+        # update positions using velocity
+        self.positions += self.velocities * dt
+
+
+        
+
 
 def spawn(particle_system: Particles, position: np.ndarray, velocity: np.ndarray, density: float, pressure: float) -> None:
     particle_system.add(position, velocity, density, pressure)
@@ -129,7 +181,7 @@ async def main() -> None:
         clear_background(WHITE)
 
         # this is where we do real work
-        draw_text("Hello World", 200, 200, 20, BLACK)
+        draw_text("", 200, 200, 20, BLACK)
         particles.update(dt)
         particles.render_textures()
         single.update(dt)

@@ -39,6 +39,7 @@ class Particles:
         self.velocities = np.empty((0, 2))
         self.densities = np.empty(0)
         self.pressures = np.empty(0)
+        self.pressure_forces = np.empty((0, 2))
         self.color = color
 
     def add(self, position: np.ndarray, velocity: np.ndarray, density: float, pressure: float) -> None:
@@ -73,7 +74,7 @@ class Particles:
                              self.color)
 
     # Density calculations made here
-    def density_calc(self, smoothing_radius: float, mass: float = 1.0) -> None:
+    def density(self, smoothing_radius: float, mass: float = 1.0) -> None:
             # deal with empty particle system 
             if len(self.positions) == 0:
                 self.densities = np.empty(0)
@@ -103,12 +104,65 @@ class Particles:
                 self.densities[i] = density_sum
                 
             # test to see if density has been implemented
-            print(f"Sample Densities: {self.densities[:5]}")
+            # print(f"Sample Densities: {self.densities[:5]}")
+
+    '''
+    p = k * (rho_{i} - rho{0}) 
+    where k is the stiffness constant / imcompressable the fluid is 
+    rho_{i} = self.densities
+    rho_{0} = inital density
+    '''
+    def pressure(self, rho_initial: float = 30.0, k: float = 200.0):
+        self.pressures = k * (self.densities - rho_initial)
+        # clamp negative pressure to 0 since fluids don't pull 
+        self.pressures = np.maximum(self.pressures, 0.0)
+        return 
+
+    def pressure_force(self, smoothing_radius):
+        # deal with empty particle system 
+        if len(self.positions) == 0:
+            self.densities = np.empty((0, 2))
+            return
+
+        self.pressure_forces = np.zeros((len(self.positions), 2))
+
+        # build spatial tree using all current positons of the particles
+        tree = sp.spatial.cKDTree(self.positions)
+
+        for particle_idx in range(len(self.positions)):
+            neighbors = tree.query_ball_point(self.positions[particle_idx], smoothing_radius)
+
+            # calculate neighbors 
+            pressure_sum = np.zeros(2)
+            for neighbor_idx in neighbors:
+                neighbor_pos = self.positions[neighbor_idx]
+
+                # setup for neighbor particles and the pressure it'll between each other
+                pressure_i = self.pressures[particle_idx]
+                pressure_j = self.pressures[neighbor_idx]
+
+                r_ij = neighbor_pos - self.positions[particle_idx]
+                r = np.linalg.norm(neighbor_pos - self.positions[particle_idx])
+
+                if r > 0:
+                    push_particle = r_ij / r 
+                    pressure_sum += ((pressure_i + pressure_j) * (1.0 - r / smoothing_radius)) * push_particle
+
+            self.pressure_forces[particle_idx] = pressure_sum
+
 
     # Placeholder !!!
     def update(self, dt: float) -> None:
+        if len(self.positions) == 0:
+            return
         # calculate density function first thing every frame
-        self.density_calc(smoothing_radius = 20.0)
+        self.density(smoothing_radius = 20.0)
+
+        # calculate pressure using density
+        self.pressure()
+
+        # calculate forces from particles' neighbors
+        self.pressure_force(smoothing_radius = 20.0)
 
         self.velocities[:, 1] += g * dt
 
@@ -136,6 +190,9 @@ class Particles:
 
         accelerations = np.zeros_like(self.velocities)
         accelerations[:, 1] = g
+
+        safe_densities = np.maximum(self.densities, 1.0)
+        accelerations += self.pressure_forces / safe_densities[:, np.newaxis]
         
         # update velocities using acceleration
         self.velocities += accelerations * dt
@@ -143,8 +200,6 @@ class Particles:
         # update positions using velocity
         self.positions += self.velocities * dt
 
-
-        
 
 
 def spawn(particle_system: Particles, position: np.ndarray, velocity: np.ndarray, density: float, pressure: float) -> None:
